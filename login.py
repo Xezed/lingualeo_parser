@@ -10,15 +10,9 @@ driver = webdriver.Firefox()
 
 
 def login():
+    """If cookie file exist then use it, else login. Return driver"""
     try:
         cookies = pickle.load(open("cookies.pkl", "rb"))
-        driver.get('http://www.lingualeo.com/ru/')
-        driver.delete_all_cookies()
-
-        for cookie in cookies:
-            driver.add_cookie(cookie)
-
-        driver.get('http://www.lingualeo.com/ru/')
 
     except FileNotFoundError:
         driver.get('http://www.lingualeo.com/ru/login')
@@ -28,8 +22,16 @@ def login():
 
         form_email.send_keys(LOGIN_EMAIL)
         form_password.send_keys(LOGIN_PASSWORD)
+
         driver.find_element_by_class_name('btn-upper-orange').click()
+
         pickle.dump(driver.get_cookies(), open("cookies.pkl", "wb"))
 
-    # else:
+    else:
+        driver.get('http://www.lingualeo.com/ru/')
+        driver.delete_all_cookies()
 
+        for cookie in cookies:
+            driver.add_cookie(cookie)
+
+    return driver
