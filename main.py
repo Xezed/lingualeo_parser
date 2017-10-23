@@ -1,5 +1,5 @@
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
+from login import login
 
-driver = webdriver.Chrome()
-driver.get('http://www.lingualeo.ru')
+login()
+
+
