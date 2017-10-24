@@ -4,6 +4,7 @@ from selenium.common.exceptions import NoSuchElementException, ElementNotInterac
 
 from login import login
 
+
 driver = login()
 
 
@@ -11,11 +12,12 @@ def select_content():
     driver.get('https://lingualeo.com/ru/jungle')
     driver.find_element_by_class_name('iconmenu-all').click()
     sleep(3)
-    driver.find_element_by_class_name('content-link').click()
+    driver.find_elements_by_class_name('content-link')[4].click()
 
 
 def read_content():
     while True:
+        print('Main loop')
         sleep(10)
         if not success_clicked_next_btn():
             break
@@ -39,13 +41,30 @@ def success_clicked_next_btn():
         sleep(SCROLL_PAUSE_TIME)
 
     try:
+        sleep(1)
         driver.find_element_by_id('pageLearnButton').click()
-        driver.find_element_by_class_name('paginator-next-btn').click()
+        sleep(4)
+        if driver.find_element_by_css_selector('.paginator-next-btn.disabled'):
+            print('Found')
+            return False
         sleep(10)
 
         return True
-        
+
+    except NoSuchElementException:
+        print('NoSuchElement')
+
+        return click_next()
+
+
+def click_next():
+    try:
+        driver.find_element_by_class_name('paginator-next-btn').click()
+
+        return True
+
     except ElementNotInteractableException:
+        print('NotInteractable')
 
         return False
 
