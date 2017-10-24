@@ -28,7 +28,9 @@ def login():
         pickle.dump(driver.get_cookies(), open("cookies.pkl", "wb"))
 
     else:
+        # We can set cookie ONLY on the same domain.
         driver.get('http://www.lingualeo.com/ru/')
+        # Delete existing cookie before set ours.
         driver.delete_all_cookies()
 
         for cookie in cookies:

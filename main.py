@@ -8,38 +8,26 @@ from login import login
 driver = login()
 
 
-def select_content():
-    driver.get('https://lingualeo.com/ru/jungle')
-    driver.find_element_by_class_name('iconmenu-all').click()
-    sleep(3)
-    driver.find_elements_by_class_name('content-link')[4].click()
-
-
-def read_content():
+def main():
     while True:
-        print('Main loop')
-        sleep(10)
-        if not success_clicked_next_btn():
-            break
+        select_content()
+        read_content_until_complete()
 
 
-def success_clicked_next_btn():
-    SCROLL_PAUSE_TIME = 1
+def click_next():
+    """Find and click next button. Return True if success, False overwise. """
+    try:
+        driver.find_element_by_class_name('paginator-next-btn').click()
 
-    # Get scroll height
-    window_height = driver.execute_script("return document.body.scrollHeight")
+        return True
 
-    scrolling_height = window_height / 50
+    except ElementNotInteractableException:
 
-    scrolled_height = 0
+        return False
 
-    while scrolled_height < window_height:
-        driver.execute_script(f"window.scrollTo(0, {scrolled_height});")
 
-        scrolled_height += scrolling_height
-
-        sleep(SCROLL_PAUSE_TIME)
-
+def complete_page():
+    """Complete page and go to next. Return True if success, False overwise."""
     try:
         sleep(1)
         driver.find_element_by_id('pageLearnButton').click()
@@ -57,18 +45,39 @@ def success_clicked_next_btn():
         return click_next()
 
 
-def click_next():
-    try:
-        driver.find_element_by_class_name('paginator-next-btn').click()
-
-        return True
-
-    except ElementNotInteractableException:
-        print('NotInteractable')
-
-        return False
+def read_content_until_complete():
+    """Read content until complete"""
+    while True:
+        sleep(10)
+        scrolling()
+        if not complete_page():
+            break
 
 
-while True:
-    select_content()
-    read_content()
+def scrolling():
+    """Scroll page of content"""
+    # Get scroll height
+    window_height = driver.execute_script("return document.body.scrollHeight")
+
+    # Get step of scrolling
+    scrolling_height = window_height / 50
+
+    scrolled_height = 0
+
+    # Scroll until bottom
+    while scrolled_height < window_height:
+        driver.execute_script(f"window.scrollTo(0, {scrolled_height});")
+        scrolled_height += scrolling_height
+        sleep(1)
+
+
+def select_content():
+    """Select content to study"""
+    driver.get('https://lingualeo.com/ru/jungle')
+    driver.find_element_by_class_name('iconmenu-all').click()
+    sleep(3)
+    driver.find_elements_by_class_name('content-link')[4].click()
+
+
+if __name__ == '__main__':
+    main()
