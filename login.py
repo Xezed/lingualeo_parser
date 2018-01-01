@@ -15,7 +15,7 @@ def login():
         cookies = pickle.load(open("cookies.pkl", "rb"))
 
     except FileNotFoundError:
-        driver.get('http://www.lingualeo.com/ru/login')
+        driver.get('http://.lingualeo.com/ru/login')
 
         form_email = driver.find_element_by_id('email')
         form_password = driver.find_element_by_id('password')
@@ -29,11 +29,13 @@ def login():
 
     else:
         # We can set cookie ONLY on the same domain.
-        driver.get('http://www.lingualeo.com/ru/')
+        driver.get('http://www.lingualeo.com')
         # Delete existing cookie before set ours.
         driver.delete_all_cookies()
 
         for cookie in cookies:
+            # Mozilla doesn't support a leading dot in domain names.
+            cookie['domain'] = cookie['domain'].strip('.')
             driver.add_cookie(cookie)
 
     return driver
